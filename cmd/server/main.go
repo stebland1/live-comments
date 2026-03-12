@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
-	"log"
+	"log/slog"
+	"os"
 
 	"github.com/stebland1/live-comments/internal/config"
 	httpapi "github.com/stebland1/live-comments/internal/transport/http"
@@ -10,10 +10,12 @@ import (
 
 func main() {
 	cfg := config.Load()
+	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 	server := httpapi.NewServer(cfg)
 
-	fmt.Printf("starting server at %s:%s\n", cfg.Server.Host, cfg.Server.Port)
+	logger.Info("starting server", "host", cfg.Server.Host, "port", cfg.Server.Port)
 	if err := server.ListenAndServe(); err != nil {
-		log.Fatal("failed to start server")
+		logger.Error("starting server", "host", cfg.Server.Host, "port", cfg.Server.Port)
+		os.Exit(1)
 	}
 }
