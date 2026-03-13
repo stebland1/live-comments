@@ -6,7 +6,10 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/stebland1/live-comments/internal/config"
+	"github.com/stebland1/live-comments/internal/repo"
 	httpapi "github.com/stebland1/live-comments/internal/transport/http"
+
+	_ "github.com/lib/pq"
 )
 
 func main() {
@@ -17,6 +20,13 @@ func main() {
 	}
 
 	cfg := config.Load()
+
+	_, err := repo.NewPostgresStore(cfg)
+	if err != nil {
+		logger.Error("creating db", "err", err)
+		os.Exit(1)
+	}
+
 	server := httpapi.NewServer(cfg)
 
 	logger.Info("starting server", "host", cfg.Server.Host, "port", cfg.Server.Port)
