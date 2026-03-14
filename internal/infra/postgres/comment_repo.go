@@ -1,4 +1,4 @@
-package repo
+package postgres
 
 import (
 	"database/sql"
@@ -7,12 +7,12 @@ import (
 	"github.com/stebland1/live-comments/internal/config"
 )
 
-type PostgresStore struct {
+type CommentRepo struct {
 	db      *sql.DB
 	timeout time.Duration
 }
 
-func NewPostgresStore(cfg config.Config) (*PostgresStore, error) {
+func NewCommentRepo(cfg config.Config) (*CommentRepo, error) {
 	db, err := sql.Open("postgres", cfg.PostgresDSN())
 
 	if err != nil {
@@ -23,5 +23,5 @@ func NewPostgresStore(cfg config.Config) (*PostgresStore, error) {
 		return nil, err
 	}
 
-	return &PostgresStore{db: db, timeout: cfg.Postgres.Timeout}, nil
+	return &CommentRepo{db: db, timeout: cfg.Postgres.Timeout}, nil
 }
