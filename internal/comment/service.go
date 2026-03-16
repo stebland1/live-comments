@@ -8,14 +8,18 @@ import (
 type Repository interface {
 	CreateComment(ctx context.Context, userID int64, videoID int64, content string) (int64, error)
 }
+
+type Publisher interface {
+	PublishComment(ctx context.Context, comment Comment) error
 }
 
 type Service struct {
-	repo Repository
+	repo      Repository
+	publisher Publisher
 }
 
-func NewService(repo Repository) *Service {
-	return &Service{repo: repo}
+func NewService(repo Repository, publisher Publisher) *Service {
+	return &Service{repo: repo, publisher: publisher}
 }
 
 func (s *Service) CreateComment(ctx context.Context, userID int64, videoID int64, content string) (int64, error) {
@@ -24,6 +28,21 @@ func (s *Service) CreateComment(ctx context.Context, userID int64, videoID int64
 		return 0, fmt.Errorf("creating comment: %w", err)
 	}
 
-	// TODO: Publish the comment into a message queue.
+	comment := Comment{
+		ID:      commentID,
+		UserID:  userID,
+		VideoID: videoID,
+		Content: content,
+	}
+
+	err = s.PublishComment(ctx, comment)
+	if err != nil {
+		return 0, fmt.Errorf("publishing comment: %w", err)
+	}
+
 	return commentID, nil
+}
+
+func (s *Service) PublishComment(ctx context.Context, comment Comment) error {
+	return s.publisher.PublishComment(ctx, comment)
 }

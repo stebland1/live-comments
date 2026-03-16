@@ -14,6 +14,17 @@ services:
     volumes:
       - ./db-init/:/docker-entrypoint-initdb.d/
       - "db-data:/var/lib/postgresql"
+  redis:
+    image: redis:7-alpine
+    container_name: lcom-redis
+    restart: unless-stopped
+    ports:
+      - "${LCOM_REDIS_PORT}:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --loglevel warning
+      
 
 volumes:
   db-data:
+  redis-data:

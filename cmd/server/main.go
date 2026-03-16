@@ -8,6 +8,7 @@ import (
 	"github.com/stebland1/live-comments/internal/comment"
 	"github.com/stebland1/live-comments/internal/config"
 	"github.com/stebland1/live-comments/internal/infra/postgres"
+	"github.com/stebland1/live-comments/internal/infra/redis"
 	httpapi "github.com/stebland1/live-comments/internal/transport/http"
 	"github.com/stebland1/live-comments/internal/transport/http/handlers"
 
@@ -29,8 +30,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	commentService := comment.NewService(commentRepo)
-	commentHandler := handlers.NewCommentHandler(commentService)
+	commentPublisher := redis.NewCommentPublisher(cfg)
+	commentService := comment.NewService(commentRepo, commentPublisher)
 	commentHandler := handlers.NewCommentHandler(commentService, logger)
 	server := httpapi.NewServer(cfg, commentHandler)
 
