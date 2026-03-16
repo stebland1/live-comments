@@ -2,6 +2,7 @@ package comment
 
 type Comment struct {
 	ID      int64
-	UserID  string
+	VideoID int64
+	UserID  int64
 	Content string
 }

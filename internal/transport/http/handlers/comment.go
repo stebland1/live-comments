@@ -9,7 +9,7 @@ import (
 )
 
 type CommentService interface {
-	CreateComment(ctx context.Context, userID int64, content string) (int64, error)
+	CreateComment(ctx context.Context, userID int64, videoID int64, content string) (int64, error)
 }
 
 type CommentHandler struct {
@@ -23,6 +23,7 @@ func NewCommentHandler(service CommentService) *CommentHandler {
 
 func (h *CommentHandler) CreateComment(w http.ResponseWriter, r *http.Request) {
 	type Request struct {
+		VideoID int64  `json:"video_id"`
 		Content string `json:"content"`
 	}
 
@@ -39,7 +40,13 @@ func (h *CommentHandler) CreateComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	commentID, err := h.service.CreateComment(r.Context(), userID, createCommentReq.Content)
+	commentID, err := h.service.CreateComment(
+		r.Context(),
+		userID,
+		createCommentReq.VideoID,
+		createCommentReq.Content,
+	)
+
 	if err != nil {
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 		return

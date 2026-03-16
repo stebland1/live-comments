@@ -28,15 +28,16 @@ func NewCommentRepo(cfg config.Config) (*CommentRepo, error) {
 	return &CommentRepo{db: db, timeout: cfg.Postgres.Timeout}, nil
 }
 
-func (r *CommentRepo) CreateComment(ctx context.Context, userID int64, content string) (int64, error) {
+func (r *CommentRepo) CreateComment(ctx context.Context, userID int64, videoID int64, content string) (int64, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.timeout)
 	defer cancel()
 
 	var id int64
 	err := r.db.QueryRowContext(
 		ctx,
-		"INSERT INTO comments (user_id, content) VALUES ($1, $2) RETURNING id",
+		"INSERT INTO comments (user_id, video_id, content) VALUES ($1, $2, $3) RETURNING id",
 		userID,
+		videoID,
 		content,
 	).Scan(&id)
 

@@ -6,7 +6,8 @@ import (
 )
 
 type Repository interface {
-	CreateComment(ctx context.Context, userID int64, content string) (int64, error)
+	CreateComment(ctx context.Context, userID int64, videoID int64, content string) (int64, error)
+}
 }
 
 type Service struct {
@@ -17,8 +18,8 @@ func NewService(repo Repository) *Service {
 	return &Service{repo: repo}
 }
 
-func (s *Service) CreateComment(ctx context.Context, userID int64, content string) (int64, error) {
-	commentID, err := s.repo.CreateComment(ctx, userID, content)
+func (s *Service) CreateComment(ctx context.Context, userID int64, videoID int64, content string) (int64, error) {
+	commentID, err := s.repo.CreateComment(ctx, userID, videoID, content)
 	if err != nil {
 		return 0, fmt.Errorf("creating comment: %w", err)
 	}
