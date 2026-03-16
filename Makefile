@@ -7,4 +7,4 @@ down:
 	docker compose down
 
 dev:
-	@air
+	@air -c .air-write.toml
