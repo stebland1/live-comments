@@ -17,8 +17,8 @@ type CommentHandler struct {
 	logger  *slog.Logger
 }
 
-func NewCommentHandler(service CommentService) *CommentHandler {
-	return &CommentHandler{service: service}
+func NewCommentHandler(service CommentService, logger *slog.Logger) *CommentHandler {
+	return &CommentHandler{service: service, logger: logger}
 }
 
 func (h *CommentHandler) CreateComment(w http.ResponseWriter, r *http.Request) {
@@ -29,6 +29,7 @@ func (h *CommentHandler) CreateComment(w http.ResponseWriter, r *http.Request) {
 
 	var createCommentReq Request
 	if err := json.NewDecoder(r.Body).Decode(&createCommentReq); err != nil {
+		h.logger.Warn("invalid create comment json", "err", err)
 		http.Error(w, "invalid json", http.StatusBadRequest)
 		return
 	}
@@ -36,6 +37,7 @@ func (h *CommentHandler) CreateComment(w http.ResponseWriter, r *http.Request) {
 	userIDStr := r.Header.Get("X-User-ID")
 	userID, err := strconv.ParseInt(userIDStr, 10, 64)
 	if err != nil {
+		h.logger.Warn("invalid user id header", "err", err)
 		http.Error(w, "missing user id in request", http.StatusBadRequest)
 		return
 	}
@@ -48,6 +50,7 @@ func (h *CommentHandler) CreateComment(w http.ResponseWriter, r *http.Request) {
 	)
 
 	if err != nil {
+		h.logger.Error("creating comment", "err", err)
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 		return
 	}

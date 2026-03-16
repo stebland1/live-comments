@@ -31,6 +31,7 @@ func main() {
 
 	commentService := comment.NewService(commentRepo)
 	commentHandler := handlers.NewCommentHandler(commentService)
+	commentHandler := handlers.NewCommentHandler(commentService, logger)
 	server := httpapi.NewServer(cfg, commentHandler)
 
 	logger.Info("starting server", "host", cfg.Server.Host, "port", cfg.Server.Port)
