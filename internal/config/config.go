@@ -33,7 +33,7 @@ func (cfg Config) PostgresDSN() string {
 		cfg.Postgres.Host,
 		cfg.Postgres.Port,
 		cfg.Postgres.DB,
-		cfg.Postgres.Timeout,
+		cfg.Postgres.Timeout/time.Second,
 	)
 }
 

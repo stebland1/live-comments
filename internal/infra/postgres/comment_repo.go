@@ -21,7 +21,10 @@ func NewCommentRepo(cfg config.Config) (*CommentRepo, error) {
 		return nil, err
 	}
 
-	if err := db.Ping(); err != nil {
+	ctx, cancel := context.WithTimeout(context.Background(), cfg.Postgres.Timeout)
+	defer cancel()
+
+	if err := db.PingContext(ctx); err != nil {
 		return nil, err
 	}
 
