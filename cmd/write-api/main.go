@@ -11,6 +11,7 @@ import (
 	"github.com/stebland1/live-comments/internal/infra/redis"
 	httpapi "github.com/stebland1/live-comments/internal/transport/http"
 	"github.com/stebland1/live-comments/internal/transport/http/handlers"
+	"github.com/stebland1/live-comments/internal/transport/http/routers"
 
 	_ "github.com/lib/pq"
 )
@@ -33,11 +34,12 @@ func main() {
 	commentPublisher := redis.NewCommentPublisher(cfg)
 	commentService := comment.NewService(commentRepo, commentPublisher)
 	commentHandler := handlers.NewCommentHandler(commentService, logger)
-	server := httpapi.NewServer(cfg, commentHandler)
+	router := routers.NewWriteRouter(commentHandler)
+	server := httpapi.NewWriteServer(cfg, router)
 
-	logger.Info("starting server", "host", cfg.Server.Host, "port", cfg.Server.Port)
+	logger.Info("starting server", "host", cfg.WriteServer.Host, "port", cfg.WriteServer.Port)
 	if err := server.ListenAndServe(); err != nil {
-		logger.Error("starting server", "host", cfg.Server.Host, "port", cfg.Server.Port, "err", err)
+		logger.Error("starting server", "host", cfg.WriteServer.Host, "port", cfg.WriteServer.Port, "err", err)
 		os.Exit(1)
 	}
 }

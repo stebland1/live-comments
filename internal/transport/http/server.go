@@ -5,12 +5,11 @@ import (
 	"net/http"
 
 	"github.com/stebland1/live-comments/internal/config"
-	"github.com/stebland1/live-comments/internal/transport/http/handlers"
 )
 
-func NewServer(cfg config.Config, commentHandler *handlers.CommentHandler) *http.Server {
+func NewWriteServer(cfg config.Config, handler *http.ServeMux) *http.Server {
 	return &http.Server{
-		Addr:    fmt.Sprintf("%s:%s", cfg.Server.Host, cfg.Server.Port),
-		Handler: NewRouter(commentHandler),
+		Addr:    fmt.Sprintf("%s:%s", cfg.WriteServer.Host, cfg.WriteServer.Port),
+		Handler: handler,
 	}
 }

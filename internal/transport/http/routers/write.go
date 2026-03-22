@@ -1,4 +1,4 @@
-package httpapi
+package routers
 
 import (
 	"net/http"
@@ -6,7 +6,7 @@ import (
 	"github.com/stebland1/live-comments/internal/transport/http/handlers"
 )
 
-func NewRouter(commentHandler *handlers.CommentHandler) *http.ServeMux {
+func NewWriteRouter(commentHandler *handlers.CommentHandler) *http.ServeMux {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("POST /comment", commentHandler.CreateComment)

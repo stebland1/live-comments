@@ -7,7 +7,7 @@ import (
 )
 
 type Config struct {
-	Server struct {
+	WriteServer struct {
 		Host string
 		Port string
 	}
@@ -57,8 +57,8 @@ func getEnv(key string, fallback string) string {
 func Load() Config {
 	cfg := Config{}
 
-	cfg.Server.Host = getEnv("LCOM_SERVER_HOST", "localhost")
-	cfg.Server.Port = getEnv("LCOM_SERVER_PORT", "8081")
+	cfg.WriteServer.Host = getEnv("LCOM_WRITE_SERVER_HOST", "localhost")
+	cfg.WriteServer.Port = getEnv("LCOM_WRITE_SERVER_PORT", "8081")
 
 	cfg.Postgres.Username = mustEnv("LCOM_PG_APP_USER")
 	cfg.Postgres.Password = mustEnv("LCOM_PG_APP_PASSWORD")
