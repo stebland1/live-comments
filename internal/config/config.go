@@ -11,6 +11,10 @@ type Config struct {
 		Host string
 		Port string
 	}
+	StreamServer struct {
+		Host string
+		Port string
+	}
 	Postgres struct {
 		Host     string
 		Port     string
@@ -59,6 +63,9 @@ func Load() Config {
 
 	cfg.WriteServer.Host = getEnv("LCOM_WRITE_SERVER_HOST", "localhost")
 	cfg.WriteServer.Port = getEnv("LCOM_WRITE_SERVER_PORT", "8081")
+
+	cfg.StreamServer.Host = getEnv("LCOM_STREAM_SERVER_HOST", "localhost")
+	cfg.StreamServer.Port = getEnv("LCOM_STREAM_SERVER_PORT", "8082")
 
 	cfg.Postgres.Username = mustEnv("LCOM_PG_APP_USER")
 	cfg.Postgres.Password = mustEnv("LCOM_PG_APP_PASSWORD")

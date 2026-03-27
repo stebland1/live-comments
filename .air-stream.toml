@@ -1,0 +1,13 @@
+root = "."
+tmp_dir = "tmp"
+
+[build]
+  entrypoint = ["./tmp/stream-api"]
+  cmd = "go build -o ./tmp/stream-api ./cmd/stream-api"
+  exclude_dir = ["tmp", "vendor"]
+  include_ext = ["go"]
+  send_interrupt = true
+
+[log]
+  main_only = true
+  silent = true

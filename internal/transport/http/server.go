@@ -13,3 +13,10 @@ func NewWriteServer(cfg config.Config, handler *http.ServeMux) *http.Server {
 		Handler: handler,
 	}
 }
+
+func NewStreamServer(cfg config.Config, handler *http.ServeMux) *http.Server {
+	return &http.Server{
+		Addr:    fmt.Sprintf("%s:%s", cfg.StreamServer.Host, cfg.StreamServer.Port),
+		Handler: handler,
+	}
+}
