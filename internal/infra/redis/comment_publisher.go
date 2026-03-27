@@ -16,12 +16,6 @@ type CommentPublisher struct {
 	timeout time.Duration
 }
 
-type CommentCreatedEvent struct {
-	ID      int64
-	VideoID int64
-	Content string
-}
-
 func NewCommentPublisher(cfg config.Config) *CommentPublisher {
 	return &CommentPublisher{
 		client: redis.NewClient(&redis.Options{
@@ -31,14 +25,14 @@ func NewCommentPublisher(cfg config.Config) *CommentPublisher {
 	}
 }
 
-func (cp *CommentPublisher) PublishComment(ctx context.Context, comment comment.Comment) error {
+func (cp *CommentPublisher) PublishComment(ctx context.Context, c comment.Comment) error {
 	ctx, cancel := context.WithTimeout(ctx, cp.timeout)
 	defer cancel()
 
-	event := CommentCreatedEvent{
-		ID:      comment.ID,
-		VideoID: comment.VideoID,
-		Content: comment.Content,
+	event := comment.CommentEvent{
+		ID:      c.ID,
+		VideoID: c.VideoID,
+		Content: c.Content,
 	}
 
 	payload, err := json.Marshal(event)
@@ -46,7 +40,7 @@ func (cp *CommentPublisher) PublishComment(ctx context.Context, comment comment.
 		return fmt.Errorf("marshalling comment: %w", err)
 	}
 
-	channel := fmt.Sprintf("comment:%d", comment.VideoID)
+	channel := fmt.Sprintf("comment:%d", c.VideoID)
 	err = cp.client.Publish(ctx, channel, payload).Err()
 	if err != nil {
 		return fmt.Errorf("publishing to channel %s: %w", channel, err)

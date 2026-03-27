@@ -6,3 +6,9 @@ type Comment struct {
 	UserID  int64
 	Content string
 }
+
+type CommentEvent struct {
+	ID      int64
+	VideoID int64
+	Content string
+}
