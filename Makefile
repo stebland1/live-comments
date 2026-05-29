@@ -8,3 +8,6 @@ down:
 
 dev-%:
 	@air -c .air-$*.toml
+
+test:
+	go test ./internal/...
