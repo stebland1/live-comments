@@ -40,10 +40,10 @@ func (cp *CommentPublisher) PublishComment(ctx context.Context, c comment.Commen
 		return fmt.Errorf("marshalling comment: %w", err)
 	}
 
-	channel := fmt.Sprintf("comment:%d", c.VideoID)
-	err = cp.client.Publish(ctx, channel, payload).Err()
+	channelID := ChannelID(c.VideoID)
+	err = cp.client.Publish(ctx, channelID, payload).Err()
 	if err != nil {
-		return fmt.Errorf("publishing to channel %s: %w", channel, err)
+		return fmt.Errorf("publishing to channel %s: %w", channelID, err)
 	}
 
 	return nil

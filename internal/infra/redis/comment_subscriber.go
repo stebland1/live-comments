@@ -41,13 +41,12 @@ func NewCommentSubscriber(cfg config.Config) *CommentSubscriber {
 }
 
 func (cs *CommentSubscriber) Subscribe(ctx context.Context, videoID int64) <-chan string {
-	// TODO: centralise this in one place. GetChannel() -> string (for example)
-	channel := fmt.Sprintf("comment:%d", videoID)
+	channelID := ChannelID(videoID)
 
 	subCtx, cancel := context.WithTimeout(ctx, cs.timeout)
 	defer cancel()
 
-	pubsub := cs.client.Subscribe(subCtx, channel)
+	pubsub := cs.client.Subscribe(subCtx, channelID)
 
 	out := make(chan string)
 	psChan := pubsub.Channel()
