@@ -5,7 +5,7 @@ import (
 )
 
 type Subscriber interface {
-	Subscribe(ctx context.Context, videoID string) <-chan string
+	Subscribe(ctx context.Context, videoID int64) <-chan string
 }
 
 type Service struct {
@@ -16,6 +16,6 @@ func NewService(subscriber Subscriber) *Service {
 	return &Service{subscriber: subscriber}
 }
 
-func (s *Service) Subscribe(ctx context.Context, videoID string) <-chan string {
+func (s *Service) Subscribe(ctx context.Context, videoID int64) <-chan string {
 	return s.subscriber.Subscribe(ctx, videoID)
 }

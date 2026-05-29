@@ -40,9 +40,9 @@ func NewCommentSubscriber(cfg config.Config) *CommentSubscriber {
 	}
 }
 
-func (cs *CommentSubscriber) Subscribe(ctx context.Context, videoID string) <-chan string {
+func (cs *CommentSubscriber) Subscribe(ctx context.Context, videoID int64) <-chan string {
 	// TODO: centralise this in one place. GetChannel() -> string (for example)
-	channel := fmt.Sprintf("comment:%s", videoID)
+	channel := fmt.Sprintf("comment:%d", videoID)
 
 	subCtx, cancel := context.WithTimeout(ctx, cs.timeout)
 	defer cancel()
