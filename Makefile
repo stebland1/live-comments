@@ -1,4 +1,4 @@
-.PHONY: up down dev
+.PHONY: up down dev-%
 
 up:
 	docker compose up -d
@@ -6,5 +6,5 @@ up:
 down:
 	docker compose down
 
-dev:
-	@air -c .air-write.toml
+dev-%:
+	@air -c .air-$*.toml
