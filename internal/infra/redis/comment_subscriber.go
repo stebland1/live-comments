@@ -9,16 +9,33 @@ import (
 	"github.com/stebland1/live-comments/internal/config"
 )
 
+type RedisClient interface {
+	Subscribe(ctx context.Context, channels ...string) PubSub
+}
+
+type PubSub interface {
+	Channel(...redis.ChannelOption) <-chan *redis.Message
+	Close() error
+}
+
 type CommentSubscriber struct {
-	client  *redis.Client
+	client  RedisClient
 	timeout time.Duration
+}
+
+type redisClientAdapter struct {
+	client *redis.Client
+}
+
+func (r *redisClientAdapter) Subscribe(ctx context.Context, channels ...string) PubSub {
+	return r.client.Subscribe(ctx, channels...)
 }
 
 func NewCommentSubscriber(cfg config.Config) *CommentSubscriber {
 	return &CommentSubscriber{
-		client: redis.NewClient(&redis.Options{
+		client: &redisClientAdapter{client: redis.NewClient(&redis.Options{
 			Addr: fmt.Sprintf("%s:%s", cfg.Redis.Host, cfg.Redis.Port),
-		}),
+		})},
 		timeout: cfg.Redis.Timeout,
 	}
 }
@@ -31,28 +48,28 @@ func (cs *CommentSubscriber) Subscribe(ctx context.Context, videoID string) <-ch
 	defer cancel()
 
 	pubsub := cs.client.Subscribe(subCtx, channel)
+
 	out := make(chan string)
+	psChan := pubsub.Channel()
 
 	go func() {
 		defer close(out)
 		defer pubsub.Close()
 
-		ch := pubsub.Channel()
-
-		// two levels of indirection is necessary here;
-		// to decouple the service that calls this method from the infra.
-		// this way we can return a channel receiving strings
-		// instead of returning a channel receiving *redis.Message
 		for {
 			select {
-			case msg := <-ch:
+			case <-ctx.Done():
+				return
+			case msg, ok := <-psChan:
+				if !ok {
+					return
+				}
+
 				select {
 				case out <- msg.Payload:
 				case <-ctx.Done():
 					return
 				}
-			case <-ctx.Done():
-				return
 			}
 		}
 	}()
