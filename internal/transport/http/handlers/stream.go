@@ -34,7 +34,7 @@ func (h *StreamHandler) Stream(w http.ResponseWriter, r *http.Request) {
 	videoID, err := strconv.ParseInt(videoIDStr, 10, 64)
 	if err != nil {
 		h.logger.Error("cannot convert 'videoID' into int64 type")
-		http.Error(w, "internal server error", http.StatusInternalServerError)
+		http.Error(w, "video id must be an integer", http.StatusBadRequest)
 		return
 	}
 	ch := h.service.Subscribe(ctx, videoID)
