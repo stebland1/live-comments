@@ -42,6 +42,18 @@ func (h *CommentHandler) CreateComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if createCommentReq.VideoID == 0 {
+		h.logger.Warn("video_id field missing in request")
+		http.Error(w, "missing video_id field in request", http.StatusBadRequest)
+		return
+	}
+
+	if createCommentReq.Content == "" {
+		h.logger.Warn("content field mustn't be empty")
+		http.Error(w, "content field mustn't be empty", http.StatusBadRequest)
+		return
+	}
+
 	commentID, err := h.service.CreateComment(
 		r.Context(),
 		userID,
