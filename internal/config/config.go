@@ -22,6 +22,9 @@ type Config struct {
 		Password string
 		DB       string
 		Timeout  time.Duration
+
+		MaxOpenConns int
+		MaxIdleConns int
 	}
 	Redis struct {
 		Host    string
@@ -73,6 +76,9 @@ func Load() Config {
 	cfg.Postgres.Port = mustEnv("LCOM_PG_PORT")
 	cfg.Postgres.DB = mustEnv("LCOM_PG_DB")
 	cfg.Postgres.Timeout = 5 * time.Second
+
+	cfg.Postgres.MaxOpenConns = 25
+	cfg.Postgres.MaxIdleConns = 25
 
 	cfg.Redis.Host = getEnv("LCOM_REDIS_HOST", "localhost")
 	cfg.Redis.Port = getEnv("LCOM_REDIS_PORT", "6379")

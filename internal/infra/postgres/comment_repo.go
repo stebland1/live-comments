@@ -28,6 +28,9 @@ func NewCommentRepo(cfg config.Config) (*CommentRepo, error) {
 		return nil, err
 	}
 
+	db.SetMaxOpenConns(cfg.Postgres.MaxOpenConns)
+	db.SetMaxIdleConns(cfg.Postgres.MaxIdleConns)
+
 	return &CommentRepo{db: db, timeout: cfg.Postgres.Timeout}, nil
 }
 
